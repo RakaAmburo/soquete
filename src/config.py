@@ -13,6 +13,8 @@ class Config:
     port: int = 18690
     auth_key: str = "changeme"
     log_level: str = "INFO"
+    mqtt_host: str = "localhost"
+    mqtt_port: int = 1883
 
 
 def load_config() -> Config:
@@ -21,4 +23,6 @@ def load_config() -> Config:
         port=int(os.getenv("WS_PORT", "18690")),
         auth_key=os.getenv("AUTH_KEY", "changeme"),
         log_level=os.getenv("LOG_LEVEL", "INFO"),
+        mqtt_host=os.getenv("MQTT_HOST", "localhost"),
+        mqtt_port=int(os.getenv("MQTT_PORT", "1883")),
     )
