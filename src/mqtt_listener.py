@@ -1,7 +1,6 @@
 """MQTT listener — forwards notifications to the connected WebSocket client."""
 
 import asyncio
-import json
 import logging
 
 import paho.mqtt.client as mqtt
@@ -39,10 +38,15 @@ class MqttListener:
 
         logger.info("MQTT notification received: %s", text)
 
-        payload = json.dumps({"type": "notification", "text": text})
-
         if self._loop is not None:
-            asyncio.run_coroutine_threadsafe(self._bus.send(payload), self._loop)
+            future = asyncio.run_coroutine_threadsafe(self._bus.send(text), self._loop)
+            try:
+                future.result(timeout=5)
+                logger.info("Notification forwarded to client")
+            except Exception as e:
+                logger.error("Failed to forward notification: %s", e)
+        else:
+            logger.error("Event loop not available")
 
     async def start(self) -> None:
         self._loop = asyncio.get_running_loop()
