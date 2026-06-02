@@ -56,19 +56,10 @@ class TaskRegistry:
         logger.info("Tasks loaded: %s", list(self._tasks.keys()))
 
     def reload(self) -> None:
-        """Reload all task modules (hot reload without restart)."""
-        import sys
-
-        # Remove cached task modules (skip base to keep Task reference stable)
-        to_remove = [
-            k for k in sys.modules
-            if k.startswith(TASKS_PACKAGE) and not k.endswith(".base")
-        ]
-        for key in to_remove:
-            del sys.modules[key]
-
-        self.load()
-        logger.info("Tasks reloaded.")
+        """Restart the process to fully reload all task modules and constants."""
+        import subprocess
+        logger.info("Restarting soquete via pm2...")
+        subprocess.Popen(["pm2", "restart", "soquete"])
 
     def get(self, key: str) -> Task | None:
         return self._tasks.get(key)
