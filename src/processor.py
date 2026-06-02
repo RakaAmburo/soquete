@@ -51,7 +51,7 @@ class MessageProcessor:
             )
             intent = result["intent"]
             params = result["params"]
-        logger.info("Intent: %s | Params: %s", intent, params)
+        logger.info("Phrase: %r | Intent: %s | Params: %s", msg, intent, params)
 
         task = self._registry.get(intent)
         if task is None:

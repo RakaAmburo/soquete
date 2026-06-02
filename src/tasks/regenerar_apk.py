@@ -21,11 +21,11 @@ class RegenerarApkTask(Task):
     key = "regenerar_apk"
 
     def match(self, phrase: str) -> dict | None:
-        low = phrase.strip().lower()
+        low = self.normalize(phrase)
         if not any(kw in low for kw in TRIGGER_WORDS):
             return None
         for proyecto in PROYECTOS:
-            if proyecto in low:
+            if self.normalize(proyecto) in low:
                 return {"proyecto": proyecto}
         return None
 

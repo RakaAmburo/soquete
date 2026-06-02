@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import unicodedata
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -27,6 +28,11 @@ class Task(ABC):
     """
 
     key: str = ""
+
+    @staticmethod
+    def normalize(s: str) -> str:
+        """Strip accents and lowercase for robust matching."""
+        return unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode().lower()
 
     def match(self, phrase: str) -> dict | None:
         """

@@ -21,7 +21,7 @@ class ComandoShellTask(Task):
 
     def match(self, phrase: str) -> dict | None:
         stripped = phrase.strip()
-        low = stripped.lower()
+        low = self.normalize(stripped)
         for prefix in SHELL_PREFIXES:
             if low.startswith(prefix):
                 return {"comando": stripped[len(prefix):].strip()}

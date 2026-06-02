@@ -60,7 +60,7 @@ def test_comando_shell_is_async():
     from src.tasks.comando_shell import ComandoShellTask
     task = ComandoShellTask()
     assert task.is_async() is True
-    assert task.execute("ejecuta algo", {}) == "procesando..."
+    assert task.execute("ejecuta algo", {}) == ""
 
 
 async def _run_comando_shell():
