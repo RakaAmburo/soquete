@@ -15,6 +15,20 @@ SHELL_COMMANDS = {
     "top", "uname", "hostname", "ip", "cat", "echo", "env", "printenv",
 }
 
+APK_KEYWORDS = ("regenera", "genera el apk", "compila", "regenerar apk", "generar apk")
+APK_PROJECTS = {"asistente": "asistente", "decurion": "decurion"}
+
+def _try_apk_shortcut(phrase: str) -> dict | None:
+    """Detect APK build intent directly without calling Ollama."""
+    low = phrase.strip().lower()
+    if not any(kw in low for kw in APK_KEYWORDS):
+        return None
+    for key, val in APK_PROJECTS.items():
+        if key in low:
+            return {"intent": "regenerar_apk", "params": {"proyecto": val}}
+    return None
+
+
 def _try_shell_shortcut(phrase: str) -> dict | None:
     """Return comando_shell intent if phrase looks like a terminal command."""
     stripped = phrase.strip()
@@ -51,6 +65,7 @@ Intenciones posibles: {intents}
 Reglas importantes:
 - Si el texto es literalmente un comando de terminal Linux de una sola palabra o frase técnica (ejemplos: "date", "uptime", "ls", "df -h", "free -m", "pwd", "whoami") O si dice "ejecuta", "corre", "lanza" seguido de algo → intent="comando_shell", params={{"comando": "<el comando exacto>"}}
 - "qué hora es" o "dime la hora" → intent="hora" (NO comando_shell)
+- "regenera el apk", "genera el apk", "compila" seguido de "asistente" o "decurion" → intent="regenerar_apk", params={{"proyecto": "asistente"}} o {{"proyecto": "decurion"}}
 - Extrae parámetros mencionados: nombres, números, estados (encender/apagar, activar/desactivar, abrir/cerrar), temperatura, porcentajes, zonas
 - Si no encaja en ninguna intención → "desconocido"
 
@@ -59,7 +74,7 @@ Formato: {{"intent": "nombre", "params": {{...}}}}
 Texto: "{phrase}"
 JSON:"""
 
-    shortcut = _try_shell_shortcut(phrase)
+    shortcut = _try_apk_shortcut(phrase) or _try_shell_shortcut(phrase)
     if shortcut:
         logger.debug("Shell shortcut: %s", shortcut)
         return shortcut
