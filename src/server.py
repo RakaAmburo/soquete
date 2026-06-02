@@ -61,7 +61,7 @@ class SoqueteListener(picows.WSListener):
             return
 
         if not self._authenticated:
-            key = data.get("key", "")
+            key = data.get("key", "").strip()
             if self._auth.validate(key):
                 self._authenticated = True
                 await self._send_text("authenticated")
@@ -95,8 +95,8 @@ class SoqueteServer:
     def __init__(self, config: Config) -> None:
         self._config = config
         self._auth = Authenticator(config.auth_key)
-        self._processor = MessageProcessor()
         self._bus = OutboundBus()
+        self._processor = MessageProcessor(bus=self._bus)
 
     @property
     def bus(self) -> OutboundBus:
