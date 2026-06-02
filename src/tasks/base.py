@@ -28,11 +28,17 @@ class Task(ABC):
 
     key: str = ""
 
+    def match(self, phrase: str) -> dict | None:
+        """
+        Optional shortcut: if this task can self-detect from the phrase,
+        return the params dict. Return None to fall through to Ollama.
+        """
+        return None
+
     def execute(self, phrase: str, params: dict) -> str:
         """
         Fast path: return a response string directly.
         Override this for quick tasks.
-        Default implementation triggers async path.
         """
         return ""
 

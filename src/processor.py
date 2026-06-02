@@ -30,12 +30,27 @@ class MessageProcessor:
             self._registry.reload()
             return f"Tareas recargadas: {self._registry.keys}"
 
-        result = await asyncio.get_event_loop().run_in_executor(
-            None, classify, msg, self._registry.keys
-        )
+        # Consultar match() de cada task antes de llamar a Ollama
+        matched_task = None
+        matched_params = None
+        for task in (self._registry.get(k) for k in self._registry.keys):
+            if task is None:
+                continue
+            params_candidate = task.match(msg)
+            if params_candidate is not None:
+                matched_task = task
+                matched_params = params_candidate
+                break
 
-        intent = result["intent"]
-        params = result["params"]
+        if matched_task is not None:
+            intent = matched_task.key
+            params = matched_params
+        else:
+            result = await asyncio.get_event_loop().run_in_executor(
+                None, classify, msg, self._registry.keys
+            )
+            intent = result["intent"]
+            params = result["params"]
         logger.info("Intent: %s | Params: %s", intent, params)
 
         task = self._registry.get(intent)
@@ -43,9 +58,9 @@ class MessageProcessor:
             return "No sé cómo hacer eso."
 
         if task.is_async():
-            quick = task.execute(msg, params)
             if self._bus:
                 asyncio.ensure_future(task.run_async(msg, params, self._bus))
-            return quick or "procesando..."
+            quick = task.execute(msg, params)
+            return quick if quick else None
 
         return task.execute(msg, params)

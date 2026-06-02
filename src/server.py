@@ -77,7 +77,8 @@ class SoqueteListener(picows.WSListener):
             return
 
         response = await self._processor.handle(msg)
-        await self._send_json({"msg": response})
+        if response is not None:
+            await self._send_json({"msg": response})
 
     async def _send_text(self, text: str) -> None:
         await self._send_json({"msg": text})

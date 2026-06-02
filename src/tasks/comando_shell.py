@@ -7,17 +7,34 @@ import subprocess
 from .base import Task
 from src.outbound import OutboundBus
 
+SHELL_PREFIXES = ("ejecuta ", "corre ", "lanza ", "run ")
+SHELL_COMMANDS = {
+    "date", "uptime", "ls", "df", "free", "pwd", "whoami", "ps",
+    "top", "uname", "hostname", "ip", "cat", "echo", "env", "printenv",
+}
+
 logger = logging.getLogger(__name__)
 
 
 class ComandoShellTask(Task):
-    key = "comando_terminal"
+    key = "comando_shell"
+
+    def match(self, phrase: str) -> dict | None:
+        stripped = phrase.strip()
+        low = stripped.lower()
+        for prefix in SHELL_PREFIXES:
+            if low.startswith(prefix):
+                return {"comando": stripped[len(prefix):].strip()}
+        base = low.split()[0] if low else ""
+        if base in SHELL_COMMANDS:
+            return {"comando": stripped}
+        return None
 
     def is_async(self) -> bool:
         return True
 
     def execute(self, phrase: str, params: dict) -> str:
-        return "procesando..."
+        return ""
 
     async def run_async(self, phrase: str, params: dict, bus: OutboundBus) -> None:
         cmd = params.get("comando", "")
