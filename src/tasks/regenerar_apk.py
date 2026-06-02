@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 PROYECTOS = {
     "asistente": {"path": "C:\\repos\\voiceassistant", "nombre": "voiceassistant"},
-    "centurion":  {"path": "C:\\repos\\decurion",       "nombre": "decurion"},
+    "centurion":  {"path": "C:\\repos\\decurion",       "nombre": "centurion"},
 }
 
 TRIGGER_WORDS = ("regenera", "genera el apk", "compila", "regenerar apk", "generar apk")
