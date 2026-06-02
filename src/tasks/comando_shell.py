@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class ComandoShellTask(Task):
-    key = "comando_shell"
+    key = "comando_terminal"
 
     def is_async(self) -> bool:
         return True

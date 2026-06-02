@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class MessageProcessor:
     """Classify incoming messages and dispatch to registered tasks."""
 
-    RELOAD_PHRASE = "recargar tasks"
+    RELOAD_PHRASE = "recargar tareas"
 
     def __init__(self, bus: OutboundBus | None = None) -> None:
         self._registry = TaskRegistry()
@@ -28,7 +28,7 @@ class MessageProcessor:
         # Trigger de recarga en caliente
         if msg.strip().lower() == self.RELOAD_PHRASE:
             self._registry.reload()
-            return f"Tasks recargadas: {self._registry.keys}"
+            return f"Tareas recargadas: {self._registry.keys}"
 
         result = await asyncio.get_event_loop().run_in_executor(
             None, classify, msg, self._registry.keys
